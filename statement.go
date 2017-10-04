@@ -25,6 +25,10 @@ func (b StatementBuilderType) Delete(from string) DeleteBuilder {
 	return DeleteBuilder(b).From(from)
 }
 
+func (b StatementBuilderType) Where(pred interface{}, args ...interface{}) WhereBuilder {
+	return WhereBuilder(b).Where(pred, args...)
+}
+
 // PlaceholderFormat sets the PlaceholderFormat field for any child builders.
 func (b StatementBuilderType) PlaceholderFormat(f PlaceholderFormat) StatementBuilderType {
 	return builder.Set(b, "PlaceholderFormat", f).(StatementBuilderType)
@@ -66,6 +70,9 @@ func Delete(from string) DeleteBuilder {
 	return StatementBuilder.Delete(from)
 }
 
+func Where(pred interface{}, args ...interface{})WhereBuilder{
+	return StatementBuilder.Where(pred,args...)
+}
 // Case returns a new CaseBuilder
 // "what" represents case value
 func Case(what ...interface{}) CaseBuilder {
