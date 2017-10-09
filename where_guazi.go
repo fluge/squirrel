@@ -2,10 +2,8 @@ package squirrel
 
 import (
 	"bytes"
-	//"database/sql"
 	"fmt"
 	"github.com/lann/builder"
-	"log"
 	"strings"
 )
 
@@ -24,51 +22,10 @@ type whereData struct {
 	Suffixes          exprs
 }
 
-//func (d *whereData) Exec() (sql.Result, error) {
-//	if d.RunWith == nil {
-//		return nil, RunnerNotSet
-//	}
-//	return ExecWith(d.RunWith, d)
-//}
-//
-//func (d *whereData) Query() (*sql.Rows, error) {
-//	if d.RunWith == nil {
-//		return nil, RunnerNotSet
-//	}
-//	return QueryWith(d.RunWith, d)
-//}
-//
-//func (d *whereData) QueryRow() RowScanner {
-//	if d.RunWith == nil {
-//		return &Row{err: RunnerNotSet}
-//	}
-//	queryRower, ok := d.RunWith.(QueryRower)
-//	if !ok {
-//		return &Row{err: RunnerNotQueryRunner}
-//	}
-//	return QueryRowWith(queryRower, d)
-//}
+
 
 func (d *whereData) ToSql() (sqlStr string, args []interface{}, err error) {
 	sql := &bytes.Buffer{}
-	//
-	//if len(d.Prefixes) > 0 {
-	//	args, _ = d.Prefixes.AppendToSql(sql, " ", args)
-	//	sql.WriteString(" ")
-	//}
-	//
-	//if len(d.Options) > 0 {
-	//	sql.WriteString(strings.Join(d.Options, " "))
-	//	sql.WriteString(" ")
-	//}
-	//
-	//if len(d.Joins) > 0 {
-	//	sql.WriteString(" ")
-	//	args, err = appendToSql(d.Joins, sql, " ", args)
-	//	if err != nil {
-	//		return
-	//	}
-	//}
 	if len(d.WhereParts) > 0 {
 		sql.WriteString(" WHERE ")
 		args, err = appendToSql(d.WhereParts, sql, " AND ", args)
@@ -122,44 +79,6 @@ type WhereBuilder builder.Builder
 func init() {
 	builder.Register(WhereBuilder{}, whereData{})
 }
-
-// Format methods
-
-// PlaceholderFormat sets PlaceholderFormat (e.g. Question or Dollar) for the
-// query.
-//func (b WhereBuilder) PlaceholderFormat(f PlaceholderFormat) WhereBuilder {
-//	return builder.Set(b, "PlaceholderFormat", f).(WhereBuilder)
-//}
-//
-//// Runner methods
-//
-//// RunWith sets a Runner (like database/sql.DB) to be used with e.g. Exec.
-//func (b WhereBuilder) RunWith(runner BaseRunner) WhereBuilder {
-//	return setRunWith(b, runner).(WhereBuilder)
-//}
-
-//// Exec builds and Execs the query with the Runner set by RunWith.
-//func (b WhereBuilder) Exec() (sql.Result, error) {
-//	data := builder.GetStruct(b).(whereData)
-//	return data.Exec()
-//}
-//
-//// Query builds and Querys the query with the Runner set by RunWith.
-//func (b WhereBuilder) Query() (*sql.Rows, error) {
-//	data := builder.GetStruct(b).(whereData)
-//	return data.Query()
-//}
-//
-//// QueryRow builds and QueryRows the query with the Runner set by RunWith.
-//func (b WhereBuilder) QueryRow() RowScanner {
-//	data := builder.GetStruct(b).(whereData)
-//	return data.QueryRow()
-//}
-
-//// Scan is a shortcut for QueryRow().Scan.
-//func (b WhereBuilder) Scan(dest ...interface{}) error {
-//	return b.QueryRow().Scan(dest...)
-//}
 
 // SQL methods
 
@@ -288,12 +207,6 @@ func (b WhereBuilder) Or(pred ...interface{}) WhereBuilder {
 			panic("unsport ")
 		}
 	}
-
-	a, _, _ := or.ToSql()
-	log.Println("a", a)
-	log.Println("len", len(pred))
-	log.Println("length", len(or))
-
 	return builder.Append(b, "WhereParts", newWherePart(or)).(WhereBuilder)
 }
 
