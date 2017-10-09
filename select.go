@@ -298,12 +298,12 @@ func (b SelectBuilder) OrderBy(orderBys ...string) SelectBuilder {
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b SelectBuilder) Limit(limit uint64) SelectBuilder {
+func (b SelectBuilder) Limit(limit int) SelectBuilder {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(SelectBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b SelectBuilder) Offset(offset uint64) SelectBuilder {
+func (b SelectBuilder) Offset(offset int) SelectBuilder {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(SelectBuilder)
 }
 

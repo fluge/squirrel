@@ -221,12 +221,12 @@ func (b joinBuilder) OrderBy(orderBys ...string) joinBuilder {
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b joinBuilder) Limit(limit uint64) joinBuilder {
+func (b joinBuilder) Limit(limit int) joinBuilder {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(joinBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b joinBuilder) Offset(offset uint64) joinBuilder {
+func (b joinBuilder) Offset(offset int) joinBuilder {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(joinBuilder)
 }
 

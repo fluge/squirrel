@@ -218,12 +218,12 @@ func (b WhereBuilder) OrderBy(orderBys ...string) WhereBuilder {
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b WhereBuilder) Limit(limit uint64) WhereBuilder {
+func (b WhereBuilder) Limit(limit int) WhereBuilder {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(WhereBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b WhereBuilder) Offset(offset uint64) WhereBuilder {
+func (b WhereBuilder) Offset(offset int) WhereBuilder {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(WhereBuilder)
 }
 
