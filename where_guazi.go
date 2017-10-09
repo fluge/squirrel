@@ -51,25 +51,24 @@ type whereData struct {
 
 func (d *whereData) ToSql() (sqlStr string, args []interface{}, err error) {
 	sql := &bytes.Buffer{}
-
-	if len(d.Prefixes) > 0 {
-		args, _ = d.Prefixes.AppendToSql(sql, " ", args)
-		sql.WriteString(" ")
-	}
-
-	if len(d.Options) > 0 {
-		sql.WriteString(strings.Join(d.Options, " "))
-		sql.WriteString(" ")
-	}
-
-	if len(d.Joins) > 0 {
-		sql.WriteString(" ")
-		args, err = appendToSql(d.Joins, sql, " ", args)
-		if err != nil {
-			return
-		}
-	}
-
+	//
+	//if len(d.Prefixes) > 0 {
+	//	args, _ = d.Prefixes.AppendToSql(sql, " ", args)
+	//	sql.WriteString(" ")
+	//}
+	//
+	//if len(d.Options) > 0 {
+	//	sql.WriteString(strings.Join(d.Options, " "))
+	//	sql.WriteString(" ")
+	//}
+	//
+	//if len(d.Joins) > 0 {
+	//	sql.WriteString(" ")
+	//	args, err = appendToSql(d.Joins, sql, " ", args)
+	//	if err != nil {
+	//		return
+	//	}
+	//}
 	if len(d.WhereParts) > 0 {
 		sql.WriteString(" WHERE ")
 		args, err = appendToSql(d.WhereParts, sql, " AND ", args)
