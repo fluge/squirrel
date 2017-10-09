@@ -33,6 +33,22 @@ func (b StatementBuilderType) Condition() WhereBuilder {
 	return WhereBuilder(b).Where("")
 }
 
+func (b StatementBuilderType) Join(join string, rest ...interface{}) joinBuilder {
+	return joinBuilder(b).Join(join, rest...)
+}
+
+func (b StatementBuilderType) JoinClause(pred interface{}, args ...interface{}) joinBuilder {
+	return joinBuilder(b).JoinClause(pred, args...)
+}
+
+func (b StatementBuilderType) LeftJoin(join string, rest ...interface{}) joinBuilder {
+	return joinBuilder(b).LeftJoin(join, rest...)
+}
+
+func (b StatementBuilderType) RightJoin(join string, rest ...interface{}) joinBuilder {
+	return joinBuilder(b).RightJoin(join, rest...)
+}
+
 // PlaceholderFormat sets the PlaceholderFormat field for any child builders.
 func (b StatementBuilderType) PlaceholderFormat(f PlaceholderFormat) StatementBuilderType {
 	return builder.Set(b, "PlaceholderFormat", f).(StatementBuilderType)
@@ -74,12 +90,30 @@ func Delete(from string) DeleteBuilder {
 	return StatementBuilder.Delete(from)
 }
 
+//新增的where方法
 func Where(pred interface{}, args ...interface{}) WhereBuilder {
 	return StatementBuilder.Where(pred, args...)
 }
 
 func Condition() WhereBuilder {
 	return StatementBuilder.Condition()
+}
+
+//新增的join方法
+func Join(join string, rest ...interface{}) joinBuilder {
+	return StatementBuilder.Join(join, rest...)
+}
+
+func JoinClause(pred interface{}, args ...interface{}) joinBuilder {
+	return StatementBuilder.JoinClause(pred, args...)
+}
+
+func LeftJoin(join string, rest ...interface{}) joinBuilder {
+	return StatementBuilder.LeftJoin(join, rest...)
+}
+
+func RightJoin(join string, rest ...interface{}) joinBuilder {
+	return StatementBuilder.RightJoin(join, rest...)
 }
 
 // Case returns a new CaseBuilder
