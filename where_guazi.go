@@ -4,9 +4,9 @@ import (
 	"bytes"
 	//"database/sql"
 	"fmt"
-	"strings"
-
 	"github.com/lann/builder"
+	"log"
+	"strings"
 )
 
 type whereData struct {
@@ -227,6 +227,75 @@ func (b WhereBuilder) RightJoin(join string, rest ...interface{}) WhereBuilder {
 // Where will panic if pred isn't any of the above types.
 func (b WhereBuilder) Where(pred interface{}, args ...interface{}) WhereBuilder {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(WhereBuilder)
+}
+
+//expr
+func (b WhereBuilder) Expr(sql string, args ...interface{}) WhereBuilder {
+	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(WhereBuilder)
+}
+
+//eq
+func (b WhereBuilder) Eq(column string, arg interface{}) WhereBuilder {
+	eq := Eq{column: arg}
+	return builder.Append(b, "WhereParts", newWherePart(eq)).(WhereBuilder)
+}
+
+//gt
+func (b WhereBuilder) Gt(column string, arg interface{}) WhereBuilder {
+	gt := Gt{column: arg}
+	return builder.Append(b, "WhereParts", newWherePart(gt)).(WhereBuilder)
+}
+
+//gtOrEq
+func (b WhereBuilder) GtOrEq(column string, arg interface{}) WhereBuilder {
+	gtOrEq := GtOrEq{column: arg}
+	return builder.Append(b, "WhereParts", newWherePart(gtOrEq)).(WhereBuilder)
+}
+
+//lt
+func (b WhereBuilder) Lt(column string, arg interface{}) WhereBuilder {
+	lt := Lt{column: arg}
+	return builder.Append(b, "WhereParts", newWherePart(lt)).(WhereBuilder)
+}
+
+//ltOrEq
+func (b WhereBuilder) LtOrEq(column string, arg interface{}) WhereBuilder {
+	ltOrEq := LtOrEq{column: arg}
+	return builder.Append(b, "WhereParts", newWherePart(ltOrEq)).(WhereBuilder)
+}
+
+//or
+func (b WhereBuilder) Or(pred ...interface{}) WhereBuilder {
+	or := Or{}
+	for _, v := range pred {
+		switch t := v.(type) {
+		case expr:
+			or = append(or, t)
+		case Gt:
+			or = append(or, t)
+		case Eq:
+			or = append(or, t)
+		case GtOrEq:
+			or = append(or, t)
+		case LtOrEq:
+			or = append(or, t)
+		case Lt:
+			or = append(or, t)
+		case And:
+			and := And{}
+			and = append(and, t)
+			or = append(or, and...)
+		default:
+			panic("unsport ")
+		}
+	}
+
+	a, _, _ := or.ToSql()
+	log.Println("a", a)
+	log.Println("len", len(pred))
+	log.Println("length", len(or))
+
+	return builder.Append(b, "WhereParts", newWherePart(or)).(WhereBuilder)
 }
 
 // GroupBy adds GROUP BY expressions to the query.

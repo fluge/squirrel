@@ -29,6 +29,25 @@ func (b StatementBuilderType) Where(pred interface{}, args ...interface{}) Where
 	return WhereBuilder(b).Where(pred, args...)
 }
 
+func (b StatementBuilderType) Gt(column string, arg interface{}) WhereBuilder {
+	return WhereBuilder(b).Gt(column, arg)
+}
+
+func (b StatementBuilderType) Eq(column string, arg interface{}) WhereBuilder {
+	return WhereBuilder(b).Eq(column, arg)
+}
+
+func (b StatementBuilderType) GtOrEq(column string, arg interface{}) WhereBuilder {
+	return WhereBuilder(b).GtOrEq(column, arg)
+}
+func (b StatementBuilderType) Lt(column string, arg interface{}) WhereBuilder {
+	return WhereBuilder(b).Lt(column, arg)
+}
+
+func (b StatementBuilderType) LtOrEq(column string, arg interface{}) WhereBuilder {
+	return WhereBuilder(b).LtOrEq(column, arg)
+}
+
 // PlaceholderFormat sets the PlaceholderFormat field for any child builders.
 func (b StatementBuilderType) PlaceholderFormat(f PlaceholderFormat) StatementBuilderType {
 	return builder.Set(b, "PlaceholderFormat", f).(StatementBuilderType)
@@ -70,9 +89,30 @@ func Delete(from string) DeleteBuilder {
 	return StatementBuilder.Delete(from)
 }
 
-func Where(pred interface{}, args ...interface{})WhereBuilder{
-	return StatementBuilder.Where(pred,args...)
+func Where(pred interface{}, args ...interface{}) WhereBuilder {
+	return StatementBuilder.Where(pred, args...)
 }
+
+func WhereGt(column string, arg interface{}) WhereBuilder {
+	return StatementBuilder.Gt(column, arg)
+}
+
+func WhereEq(column string, arg interface{}) WhereBuilder {
+	return StatementBuilder.Eq(column, arg)
+}
+
+func WhereGtOrEq(column string, arg interface{}) WhereBuilder {
+	return StatementBuilder.GtOrEq(column, arg)
+}
+
+func WhereLtOrEq(column string, arg interface{}) WhereBuilder {
+	return StatementBuilder.LtOrEq(column, arg)
+}
+
+func WhereLt(column string, arg interface{}) WhereBuilder {
+	return StatementBuilder.Lt(column, arg)
+}
+
 // Case returns a new CaseBuilder
 // "what" represents case value
 func Case(what ...interface{}) CaseBuilder {
