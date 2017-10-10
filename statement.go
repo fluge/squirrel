@@ -33,20 +33,20 @@ func (b StatementBuilderType) Condition() WhereBuilder {
 	return WhereBuilder(b).Where("")
 }
 
-func (b StatementBuilderType) Join(join string, rest ...interface{}) joinBuilder {
-	return joinBuilder(b).Join(join, rest...)
+func (b StatementBuilderType) Join(join string, rest ...interface{}) JoinBuilder {
+	return JoinBuilder(b).Join(join, rest...)
 }
 
-func (b StatementBuilderType) JoinClause(pred interface{}, args ...interface{}) joinBuilder {
-	return joinBuilder(b).JoinClause(pred, args...)
+func (b StatementBuilderType) JoinClause(pred interface{}, args ...interface{}) JoinBuilder {
+	return JoinBuilder(b).JoinClause(pred, args...)
 }
 
-func (b StatementBuilderType) LeftJoin(join string, rest ...interface{}) joinBuilder {
-	return joinBuilder(b).LeftJoin(join, rest...)
+func (b StatementBuilderType) LeftJoin(join string, rest ...interface{}) JoinBuilder {
+	return JoinBuilder(b).LeftJoin(join, rest...)
 }
 
-func (b StatementBuilderType) RightJoin(join string, rest ...interface{}) joinBuilder {
-	return joinBuilder(b).RightJoin(join, rest...)
+func (b StatementBuilderType) RightJoin(join string, rest ...interface{}) JoinBuilder {
+	return JoinBuilder(b).RightJoin(join, rest...)
 }
 
 // PlaceholderFormat sets the PlaceholderFormat field for any child builders.
@@ -100,19 +100,19 @@ func Condition() WhereBuilder {
 }
 
 //新增的join方法
-func Join(join string, rest ...interface{}) joinBuilder {
+func Join(join string, rest ...interface{}) JoinBuilder {
 	return StatementBuilder.Join(join, rest...)
 }
 
-func JoinClause(pred interface{}, args ...interface{}) joinBuilder {
+func JoinClause(pred interface{}, args ...interface{}) JoinBuilder {
 	return StatementBuilder.JoinClause(pred, args...)
 }
 
-func LeftJoin(join string, rest ...interface{}) joinBuilder {
+func LeftJoin(join string, rest ...interface{}) JoinBuilder {
 	return StatementBuilder.LeftJoin(join, rest...)
 }
 
-func RightJoin(join string, rest ...interface{}) joinBuilder {
+func RightJoin(join string, rest ...interface{}) JoinBuilder {
 	return StatementBuilder.RightJoin(join, rest...)
 }
 
