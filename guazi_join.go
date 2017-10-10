@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/lann/builder"
-	"log"
-	"strconv"
 )
 
 type joinData struct {
@@ -56,25 +54,16 @@ func (d *joinData) ToSql() (sqlStr string, args []interface{}, err error) {
 
 	if len(d.OrderBys) > 0 {
 		sql.WriteString(" ORDER BY ")
-		log.Println("adfa")
 		sql.WriteString(strings.Join(d.OrderBys, ", "))
 	}
-	limit := 0
-	offset := 0
 	if len(d.Limit) > 0 {
-		limit, _ = strconv.Atoi(d.Limit)
-		if limit > 0 {
-			sql.WriteString(" LIMIT ")
-			sql.WriteString(d.Limit)
-		}
+		sql.WriteString(" LIMIT ")
+		sql.WriteString(d.Limit)
 	}
 
 	if len(d.Offset) > 0 {
-		offset, _ = strconv.Atoi(d.Offset)
-		if offset > 0 && limit > 0 {
-			sql.WriteString(" OFFSET ")
-			sql.WriteString(d.Offset)
-		}
+		sql.WriteString(" OFFSET ")
+		sql.WriteString(d.Offset)
 	}
 
 	if len(d.Suffixes) > 0 {
