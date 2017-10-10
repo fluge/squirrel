@@ -66,3 +66,8 @@ func TestUpdateBuilderNoRunner(t *testing.T) {
 	_, err := b.Exec()
 	assert.Equal(t, RunnerNotSet, err)
 }
+func TestUpdateBuilder_IncrBy(t *testing.T) {
+	a, _, _ := Update("test").Set("x", 1).IncrBy("a", 1).ToSql()
+	expectedSql := "UPDATE test SET x = ?, a = a+?"
+	assert.Equal(t, expectedSql, a)
+}

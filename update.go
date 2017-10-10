@@ -85,7 +85,11 @@ func (d *updateData) ToSql() (sqlStr string, args []interface{}, err error) {
 			valSql = "?"
 			args = append(args, setClause.value)
 		}
-		setSqls[i] = fmt.Sprintf("%s = %s", setClause.column, valSql)
+		if ok, column := getSetColumn(setClause.column); ok {
+			setSqls[i] = fmt.Sprintf("%s%s", column, valSql)
+		} else {
+			setSqls[i] = fmt.Sprintf("%s = %s", column, valSql)
+		}
 	}
 	sql.WriteString(strings.Join(setSqls, ", "))
 
@@ -119,6 +123,14 @@ func (d *updateData) ToSql() (sqlStr string, args []interface{}, err error) {
 
 	sqlStr, err = d.PlaceholderFormat.ReplacePlaceholders(sql.String())
 	return
+}
+func getSetColumn(column string) (bool, string) {
+	r := []rune(column)
+	str := string(r[:3])
+	if str == "=-=" || str == "=+=" {
+		return true, string(r[3:])
+	}
+	return false, column
 }
 
 // Builder
@@ -186,6 +198,16 @@ func (b UpdateBuilder) Table(table string) UpdateBuilder {
 // Set adds SET clauses to the query.
 func (b UpdateBuilder) Set(column string, value interface{}) UpdateBuilder {
 	return builder.Append(b, "SetClauses", setClause{column: column, value: value}).(UpdateBuilder)
+}
+
+func (b UpdateBuilder) IncrBy(column string, num int) UpdateBuilder {
+	column = fmt.Sprintf("=+=%s = %s+", column, column)
+	return builder.Append(b, "SetClauses", setClause{column: column, value: num}).(UpdateBuilder)
+}
+
+func (b UpdateBuilder) DecrBy(column string, num int) UpdateBuilder {
+	column = fmt.Sprintf("=-=%s = %s-", column, column)
+	return builder.Append(b, "SetClauses", setClause{column: column, value: num}).(UpdateBuilder)
 }
 
 // SetMap is a convenience method which calls .Set for each key/value pair in clauses.
