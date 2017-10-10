@@ -131,6 +131,35 @@ func (b DeleteBuilder) Where(pred interface{}, args ...interface{}) DeleteBuilde
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(DeleteBuilder)
 }
 
+//expr
+func (b DeleteBuilder) Expr(sql string, args ...interface{}) DeleteBuilder {
+	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(DeleteBuilder)
+}
+
+//eq
+func (b DeleteBuilder) Eq(column string, arg interface{}) DeleteBuilder {
+	return b.Where(Eq{column: arg})
+}
+
+//gt
+func (b DeleteBuilder) Gt(column string, arg interface{}) DeleteBuilder {
+	return b.Where(Gt{column: arg})
+}
+
+//gtOrEq
+func (b DeleteBuilder) GtOrEq(column string, arg interface{}) DeleteBuilder {
+	return b.Where(GtOrEq{column: arg})
+}
+
+//lt
+func (b DeleteBuilder) Lt(column string, arg interface{}) DeleteBuilder {
+	return b.Where(Lt{column: arg})
+}
+
+//ltOrEq
+func (b DeleteBuilder) LtOrEq(column string, arg interface{}) DeleteBuilder {
+	return b.Where(LtOrEq{column: arg})
+}
 // OrderBy adds ORDER BY expressions to the query.
 func (b DeleteBuilder) OrderBy(orderBys ...string) DeleteBuilder {
 	return builder.Extend(b, "OrderBys", orderBys).(DeleteBuilder)

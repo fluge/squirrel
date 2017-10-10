@@ -206,7 +206,7 @@ func (b UpdateBuilder) IncrBy(column string, num int) UpdateBuilder {
 }
 
 func (b UpdateBuilder) DecrBy(column string, num int) UpdateBuilder {
-	column = fmt.Sprintf("=-=%s = %s-", column, column)
+	column = fmt.Sprintf("=-=%s = %s+", column, column)
 	return builder.Append(b, "SetClauses", setClause{column: column, value: num}).(UpdateBuilder)
 }
 
@@ -233,12 +233,42 @@ func (b UpdateBuilder) Where(pred interface{}, args ...interface{}) UpdateBuilde
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(UpdateBuilder)
 }
 
+//expr
+func (b UpdateBuilder) Expr(sql string, args ...interface{}) UpdateBuilder {
+	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(UpdateBuilder)
+}
+
+//eq
+func (b UpdateBuilder) Eq(column string, arg interface{}) UpdateBuilder {
+	return b.Where(Eq{column: arg})
+}
+
+//gt
+func (b UpdateBuilder) Gt(column string, arg interface{}) UpdateBuilder {
+	return b.Where(Gt{column: arg})
+}
+
+//gtOrEq
+func (b UpdateBuilder) GtOrEq(column string, arg interface{}) UpdateBuilder {
+	return b.Where(GtOrEq{column: arg})
+}
+
+//lt
+func (b UpdateBuilder) Lt(column string, arg interface{}) UpdateBuilder {
+	return b.Where(Lt{column: arg})
+}
+
+//ltOrEq
+func (b UpdateBuilder) LtOrEq(column string, arg interface{}) UpdateBuilder {
+	return b.Where(LtOrEq{column: arg})
+}
+
 // OrderBy adds ORDER BY expressions to the query.
 func (b UpdateBuilder) OrderBy(orderBys ...string) UpdateBuilder {
 	return builder.Extend(b, "OrderBys", orderBys).(UpdateBuilder)
 }
 
-// Limit sets a LIMIT clause on the query.
+// Limit sets a LIMIT clause on the update.
 func (b UpdateBuilder) Limit(limit uint64) UpdateBuilder {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(UpdateBuilder)
 }
