@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/lann/builder"
+	"strconv"
 )
 
 type selectData struct {
@@ -120,14 +121,22 @@ func (d *selectData) ToSql() (sqlStr string, args []interface{}, err error) {
 		sql.WriteString(strings.Join(d.OrderBys, ", "))
 	}
 
+	limit := 0
+	offset := 0
 	if len(d.Limit) > 0 {
-		sql.WriteString(" LIMIT ")
-		sql.WriteString(d.Limit)
+		limit, _ = strconv.Atoi(d.Limit)
+		if limit > 0 {
+			sql.WriteString(" LIMIT ")
+			sql.WriteString(d.Limit)
+		}
 	}
 
 	if len(d.Offset) > 0 {
-		sql.WriteString(" OFFSET ")
-		sql.WriteString(d.Offset)
+		offset, _ = strconv.Atoi(d.Offset)
+		if offset > 0 && limit > 0 {
+			sql.WriteString(" OFFSET ")
+			sql.WriteString(d.Offset)
+		}
 	}
 
 	if len(d.Suffixes) > 0 {
@@ -278,6 +287,36 @@ func (b SelectBuilder) RightJoin(join string, rest ...interface{}) SelectBuilder
 // Where will panic if pred isn't any of the above types.
 func (b SelectBuilder) Where(pred interface{}, args ...interface{}) SelectBuilder {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(SelectBuilder)
+}
+
+//expr
+func (b SelectBuilder) Expr(sql string, args ...interface{}) SelectBuilder {
+	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(SelectBuilder)
+}
+
+//eq
+func (b SelectBuilder) Eq(column string, arg interface{}) SelectBuilder {
+	return b.Where(Eq{column: arg})
+}
+
+//gt
+func (b SelectBuilder) Gt(column string, arg interface{}) SelectBuilder {
+	return b.Where(Gt{column: arg})
+}
+
+//gtOrEq
+func (b SelectBuilder) GtOrEq(column string, arg interface{}) SelectBuilder {
+	return b.Where(GtOrEq{column: arg})
+}
+
+//lt
+func (b SelectBuilder) Lt(column string, arg interface{}) SelectBuilder {
+	return b.Where(Lt{column: arg})
+}
+
+//ltOrEq
+func (b SelectBuilder) LtOrEq(column string, arg interface{}) SelectBuilder {
+	return b.Where(LtOrEq{column: arg})
 }
 
 // GroupBy adds GROUP BY expressions to the query.
