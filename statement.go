@@ -1,6 +1,9 @@
 package squirrel
 
-import "github.com/lann/builder"
+import (
+	"fmt"
+	"github.com/lann/builder"
+)
 
 // StatementBuilderType is the type of StatementBuilder.
 type StatementBuilderType builder.Builder
@@ -8,6 +11,11 @@ type StatementBuilderType builder.Builder
 // Select returns a SelectBuilder for this StatementBuilderType.
 func (b StatementBuilderType) Select(columns ...string) SelectBuilder {
 	return SelectBuilder(b).Columns(columns...)
+}
+
+func (b StatementBuilderType) Count(columns string) SelectBuilder {
+	str := fmt.Sprintf("COUNT(%s)", columns)
+	return SelectBuilder(b).Columns(str)
 }
 
 // Insert returns a InsertBuilder for this StatementBuilderType.
