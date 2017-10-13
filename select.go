@@ -276,7 +276,7 @@ func (b SelectBuilder) RightJoin(join string, rest ...interface{}) SelectBuilder
 // are ANDed together.
 //
 // Where will panic if pred isn't any of the above types.
-func (b SelectBuilder) Where(pred interface{}, args ...interface{}) SelectBuilder {
+func (b SelectBuilder) Where(pred interface{}, args ...interface{}) Conditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(SelectBuilder)
 }
 
@@ -286,27 +286,27 @@ func (b SelectBuilder) Expr(sql string, args ...interface{}) SelectBuilder {
 }
 
 //eq
-func (b SelectBuilder) Eq(column string, arg interface{}) SelectBuilder {
+func (b SelectBuilder) Eq(column string, arg interface{}) Conditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b SelectBuilder) Gt(column string, arg interface{}) SelectBuilder {
+func (b SelectBuilder) Gt(column string, arg interface{}) Conditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b SelectBuilder) GtOrEq(column string, arg interface{}) SelectBuilder {
+func (b SelectBuilder) GtOrEq(column string, arg interface{}) Conditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b SelectBuilder) Lt(column string, arg interface{}) SelectBuilder {
+func (b SelectBuilder) Lt(column string, arg interface{}) Conditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b SelectBuilder) LtOrEq(column string, arg interface{}) SelectBuilder {
+func (b SelectBuilder) LtOrEq(column string, arg interface{}) Conditions {
 	return b.Where(LtOrEq{column: arg})
 }
 

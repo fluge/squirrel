@@ -229,7 +229,7 @@ func (b UpdateBuilder) SetMap(clauses map[string]interface{}) UpdateBuilder {
 // Where adds WHERE expressions to the query.
 //
 // See SelectBuilder.Where for more information.
-func (b UpdateBuilder) Where(pred interface{}, args ...interface{}) UpdateBuilder {
+func (b UpdateBuilder) Where(pred interface{}, args ...interface{}) Conditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(UpdateBuilder)
 }
 
@@ -239,27 +239,27 @@ func (b UpdateBuilder) Expr(sql string, args ...interface{}) UpdateBuilder {
 }
 
 //eq
-func (b UpdateBuilder) Eq(column string, arg interface{}) UpdateBuilder {
+func (b UpdateBuilder) Eq(column string, arg interface{}) Conditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b UpdateBuilder) Gt(column string, arg interface{}) UpdateBuilder {
+func (b UpdateBuilder) Gt(column string, arg interface{}) Conditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b UpdateBuilder) GtOrEq(column string, arg interface{}) UpdateBuilder {
+func (b UpdateBuilder) GtOrEq(column string, arg interface{}) Conditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b UpdateBuilder) Lt(column string, arg interface{}) UpdateBuilder {
+func (b UpdateBuilder) Lt(column string, arg interface{}) Conditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b UpdateBuilder) LtOrEq(column string, arg interface{}) UpdateBuilder {
+func (b UpdateBuilder) LtOrEq(column string, arg interface{}) Conditions {
 	return b.Where(LtOrEq{column: arg})
 }
 

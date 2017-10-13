@@ -127,7 +127,7 @@ func (b DeleteBuilder) From(from string) DeleteBuilder {
 // Where adds WHERE expressions to the query.
 //
 // See SelectBuilder.Where for more information.
-func (b DeleteBuilder) Where(pred interface{}, args ...interface{}) DeleteBuilder {
+func (b DeleteBuilder) Where(pred interface{}, args ...interface{}) Conditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(DeleteBuilder)
 }
 
@@ -137,27 +137,27 @@ func (b DeleteBuilder) Expr(sql string, args ...interface{}) DeleteBuilder {
 }
 
 //eq
-func (b DeleteBuilder) Eq(column string, arg interface{}) DeleteBuilder {
+func (b DeleteBuilder) Eq(column string, arg interface{}) Conditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b DeleteBuilder) Gt(column string, arg interface{}) DeleteBuilder {
+func (b DeleteBuilder) Gt(column string, arg interface{}) Conditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b DeleteBuilder) GtOrEq(column string, arg interface{}) DeleteBuilder {
+func (b DeleteBuilder) GtOrEq(column string, arg interface{}) Conditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b DeleteBuilder) Lt(column string, arg interface{}) DeleteBuilder {
+func (b DeleteBuilder) Lt(column string, arg interface{}) Conditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b DeleteBuilder) LtOrEq(column string, arg interface{}) DeleteBuilder {
+func (b DeleteBuilder) LtOrEq(column string, arg interface{}) Conditions {
 	return b.Where(LtOrEq{column: arg})
 }
 
