@@ -1,20 +1,19 @@
 package squirrel
 
 
-// DeleteBuilder builds SQL DELETE statements.
 type Conditions interface {
 	ToSql()(interface{},interface{},error)
-	Where(interface{},...interface{})interface{}
-	Eq(string,interface{})interface{}
-	Gt(string,interface{})interface{}
-	GtOrEq(string,interface{})interface{}
-	Lt(string,interface{})interface{}
-	LtOrEq(string,interface{})interface{}
-	OrderBy(...string)interface{}
-	Limit(int)interface{}
-	Offset(int)interface{}
-	GroupBy(...string)interface{}
-	Having(interface{},...interface{})interface{}
+	Where(interface{},...interface{})Conditions
+	Eq(string,interface{})Conditions
+	Gt(string,interface{})Conditions
+	GtOrEq(string,interface{})Conditions
+	Lt(string,interface{})Conditions
+	LtOrEq(string,interface{})Conditions
+	OrderBy(...string)Conditions
+	Limit(int)Conditions
+	Offset(int)Conditions
+	GroupBy(...string)Conditions
+	Having(interface{},...interface{})Conditions
 }
 
 
