@@ -264,21 +264,21 @@ func (b UpdateBuilder) LtOrEq(column string, arg interface{}) Conditions {
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b UpdateBuilder) OrderBy(orderBys ...string) UpdateBuilder {
+func (b UpdateBuilder) OrderBy(orderBys ...string) Conditions {
 	return builder.Extend(b, "OrderBys", orderBys).(UpdateBuilder)
 }
 
 // Limit sets a LIMIT clause on the update.
-func (b UpdateBuilder) Limit(limit uint64) UpdateBuilder {
+func (b UpdateBuilder) Limit(limit int) Conditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(UpdateBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b UpdateBuilder) Offset(offset uint64) UpdateBuilder {
+func (b UpdateBuilder) Offset(offset int) Conditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(UpdateBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b UpdateBuilder) Suffix(sql string, args ...interface{}) UpdateBuilder {
+func (b UpdateBuilder) Suffix(sql string, args ...interface{}) Conditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(UpdateBuilder)
 }

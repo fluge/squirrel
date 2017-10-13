@@ -162,21 +162,21 @@ func (b DeleteBuilder) LtOrEq(column string, arg interface{}) Conditions {
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b DeleteBuilder) OrderBy(orderBys ...string) DeleteBuilder {
+func (b DeleteBuilder) OrderBy(orderBys ...string) Conditions {
 	return builder.Extend(b, "OrderBys", orderBys).(DeleteBuilder)
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b DeleteBuilder) Limit(limit uint64) DeleteBuilder {
+func (b DeleteBuilder) Limit(limit int) Conditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(DeleteBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b DeleteBuilder) Offset(offset uint64) DeleteBuilder {
+func (b DeleteBuilder) Offset(offset int) Conditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(DeleteBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b DeleteBuilder) Suffix(sql string, args ...interface{}) DeleteBuilder {
+func (b DeleteBuilder) Suffix(sql string, args ...interface{}) Conditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(DeleteBuilder)
 }

@@ -13,8 +13,8 @@ func TestDeleteBuilderToSql(t *testing.T) {
 		Where("b = ?", 1).
 		OrderBy("c").
 		Limit(2).
-		Offset(3).
-		Suffix("RETURNING ?", 4)
+		Offset(3)
+		//Suffix("RETURNING ?", 4)
 
 	sql, args, err := b.ToSql()
 	assert.NoError(t, err)
@@ -34,25 +34,25 @@ func TestDeleteBuilderToSqlErr(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestDeleteBuilderPlaceholders(t *testing.T) {
-	b := Delete("test").Where("x = ? AND y = ?", 1, 2)
+//func TestDeleteBuilderPlaceholders(t *testing.T) {
+//	b := Delete("test").Where("x = ? AND y = ?", 1, 2)
+//
+//	sql, _, _ := b.PlaceholderFormat(Question).ToSql()
+//	assert.Equal(t, "DELETE FROM test WHERE x = ? AND y = ?", sql)
+//
+//	sql, _, _ = b.PlaceholderFormat(Dollar).ToSql()
+//	assert.Equal(t, "DELETE FROM test WHERE x = $1 AND y = $2", sql)
+//}
 
-	sql, _, _ := b.PlaceholderFormat(Question).ToSql()
-	assert.Equal(t, "DELETE FROM test WHERE x = ? AND y = ?", sql)
-
-	sql, _, _ = b.PlaceholderFormat(Dollar).ToSql()
-	assert.Equal(t, "DELETE FROM test WHERE x = $1 AND y = $2", sql)
-}
-
-func TestDeleteBuilderRunners(t *testing.T) {
-	db := &DBStub{}
-	b := Delete("test").Where("x = ?", 1).RunWith(db)
-
-	expectedSql := "DELETE FROM test WHERE x = ?"
-
-	b.Exec()
-	assert.Equal(t, expectedSql, db.LastExecSql)
-}
+//func TestDeleteBuilderRunners(t *testing.T) {
+//	db := &DBStub{}
+//	b := Delete("test").Where("x = ?", 1).RunWith(db)
+//
+//	expectedSql := "DELETE FROM test WHERE x = ?"
+//
+//	b.Exec()
+//	assert.Equal(t, expectedSql, db.LastExecSql)
+//}
 
 func TestDeleteBuilderNoRunner(t *testing.T) {
 	b := Delete("test")

@@ -16,13 +16,13 @@ func TestStatementBuilder(t *testing.T) {
 	assert.Equal(t, "SELECT test", db.LastExecSql)
 }
 
-func TestStatementBuilderPlaceholderFormat(t *testing.T) {
-	db := &DBStub{}
-	sb := StatementBuilder.RunWith(db).PlaceholderFormat(Dollar)
-
-	sb.Select("test").Where("x = ?").Exec()
-	assert.Equal(t, "SELECT test WHERE x = $1", db.LastExecSql)
-}
+//func TestStatementBuilderPlaceholderFormat(t *testing.T) {
+//	db := &DBStub{}
+//	sb := StatementBuilder.RunWith(db).PlaceholderFormat(Dollar)
+//
+//	sb.Select("test").Where("x = ?").Exec()
+//	assert.Equal(t, "SELECT test WHERE x = $1", db.LastExecSql)
+//}
 
 func TestRunWithDB(t *testing.T) {
 	db := &sql.DB{}

@@ -15,8 +15,8 @@ func TestUpdateBuilderToSql(t *testing.T) {
 		Where("d = ?", 3).
 		OrderBy("e").
 		Limit(4).
-		Offset(5).
-		Suffix("RETURNING ?", 6)
+		Offset(5)
+		//Suffix("RETURNING ?", 6)
 
 	sql, args, err := b.ToSql()
 	assert.NoError(t, err)

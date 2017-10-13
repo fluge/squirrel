@@ -242,18 +242,8 @@ func (b SelectBuilder) JoinClause(pred interface{}, args ...interface{}) SelectB
 }
 
 // Join adds a JOIN clause to the query.
-func (b SelectBuilder) Join(join string, rest ...interface{}) SelectBuilder {
+func (b SelectBuilder) Join(join string, status string,rest ...interface{}) Conditions {
 	return b.JoinClause("JOIN "+join, rest...)
-}
-
-// LeftJoin adds a LEFT JOIN clause to the query.
-func (b SelectBuilder) LeftJoin(join string, rest ...interface{}) SelectBuilder {
-	return b.JoinClause("LEFT JOIN "+join, rest...)
-}
-
-// RightJoin adds a RIGHT JOIN clause to the query.
-func (b SelectBuilder) RightJoin(join string, rest ...interface{}) SelectBuilder {
-	return b.JoinClause("RIGHT JOIN "+join, rest...)
 }
 
 // Where adds an expression to the WHERE clause of the query.
@@ -323,21 +313,21 @@ func (b SelectBuilder) Having(pred interface{}, rest ...interface{}) SelectBuild
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b SelectBuilder) OrderBy(orderBys ...string) SelectBuilder {
+func (b SelectBuilder) OrderBy(orderBys ...string) Conditions {
 	return builder.Extend(b, "OrderBys", orderBys).(SelectBuilder)
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b SelectBuilder) Limit(limit int) SelectBuilder {
+func (b SelectBuilder) Limit(limit int) Conditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(SelectBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b SelectBuilder) Offset(offset int) SelectBuilder {
+func (b SelectBuilder) Offset(offset int) Conditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(SelectBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b SelectBuilder) Suffix(sql string, args ...interface{}) SelectBuilder {
+func (b SelectBuilder) Suffix(sql string, args ...interface{}) Conditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(SelectBuilder)
 }
