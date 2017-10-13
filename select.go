@@ -242,17 +242,17 @@ func (b SelectBuilder) JoinClause(pred interface{}, args ...interface{}) SelectB
 }
 
 // Join adds a JOIN clause to the query.
-func (b SelectBuilder) Join(join string, status string,rest ...interface{}) Conditions {
+func (b SelectBuilder) Join(join string, rest ...interface{}) JoinCondition {
 	return b.JoinClause("JOIN "+join, rest...)
 }
 
 // LeftJoin adds a LEFT JOIN clause to the query.
-func (b SelectBuilder) LeftJoin(join string, rest ...interface{}) Conditions {
+func (b SelectBuilder) LeftJoin(join string, rest ...interface{}) JoinCondition {
 	return b.JoinClause("LEFT JOIN "+join, rest...)
 }
 
 // RightJoin adds a RIGHT JOIN clause to the query.
-func (b SelectBuilder) RightJoin(join string, rest ...interface{}) Conditions {
+func (b SelectBuilder) RightJoin(join string, rest ...interface{}) JoinCondition {
 	return b.JoinClause("RIGHT JOIN "+join, rest...)
 }
 
