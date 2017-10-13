@@ -246,6 +246,16 @@ func (b SelectBuilder) Join(join string, status string,rest ...interface{}) Cond
 	return b.JoinClause("JOIN "+join, rest...)
 }
 
+// LeftJoin adds a LEFT JOIN clause to the query.
+func (b SelectBuilder) LeftJoin(join string, rest ...interface{}) Conditions {
+	return b.JoinClause("LEFT JOIN "+join, rest...)
+}
+
+// RightJoin adds a RIGHT JOIN clause to the query.
+func (b SelectBuilder) RightJoin(join string, rest ...interface{}) Conditions {
+	return b.JoinClause("RIGHT JOIN "+join, rest...)
+}
+
 // Where adds an expression to the WHERE clause of the query.
 //
 // Expressions are ANDed together in the generated SQL.

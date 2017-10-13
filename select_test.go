@@ -20,8 +20,8 @@ func TestSelectBuilderToSql(t *testing.T) {
 		From("e").
 		JoinClause("CROSS JOIN j1").
 		Join("j2").
-		//LeftJoin("j3").
-		//RightJoin("j4").
+		LeftJoin("j3").
+		RightJoin("j4").
 		Where("f = ?", 4).
 		Where(Eq{"g": 5}).
 		Where(map[string]interface{}{"h": 6}).
