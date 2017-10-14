@@ -27,12 +27,12 @@ func TestSelectBuilderToSql(t *testing.T) {
 		Where(map[string]interface{}{"h": 6}).
 		Where(Eq{"i": []int{7, 8, 9}}).
 		Where(Or{Expr("j = ?", 10), And{Eq{"k": 11}, Expr("true")}}).
-		//GroupBy("l").
-		//Having("m = n").
+		GroupBy("l").
+		Having("m = n").
 		OrderBy("o ASC", "p DESC").
 		Limit(12).
-		Offset(13)
-		//Suffix("FETCH FIRST ? ROWS ONLY", 14)
+		Offset(13).
+		Suffix("FETCH FIRST ? ROWS ONLY", 14)
 
 	sql, args, err := b.ToSql()
 	log.Println("log sql", sql)
@@ -66,53 +66,54 @@ func TestSelectBuilderToSql(t *testing.T) {
 //	expectedArgs := []interface{}{0}
 //	assert.Equal(t, expectedArgs, args)
 //}
-//
-//func TestSelectBuilderToSqlErr(t *testing.T) {
-//	_, _, err := Select().From("x").ToSql()
-//	assert.Error(t, err)
-//}
 
-//func TestSelectBuilderPlaceholders(t *testing.T) {
-//	b := Select("test").Where("x = ? AND y = ?")
-//
-//	sql, _, _ := b.PlaceholderFormat(Question).ToSql()
-//	assert.Equal(t, "SELECT test WHERE x = ? AND y = ?", sql)
-//
-//	sql, _, _ = b.PlaceholderFormat(Dollar).ToSql()
-//	assert.Equal(t, "SELECT test WHERE x = $1 AND y = $2", sql)
-//}
-
-func TestSelectBuilderRunners(t *testing.T) {
-	db := &DBStub{}
-	b := Select("test").RunWith(db)
-
-	expectedSql := "SELECT test"
-
-	b.Exec()
-	assert.Equal(t, expectedSql, db.LastExecSql)
-
-	b.Query()
-	assert.Equal(t, expectedSql, db.LastQuerySql)
-
-	b.QueryRow()
-	assert.Equal(t, expectedSql, db.LastQueryRowSql)
-
-	err := b.Scan()
-	assert.NoError(t, err)
+func TestSelectBuilderToSqlErr(t *testing.T) {
+	_, _, err := Select().From("x").ToSql()
+	assert.Error(t, err)
 }
 
-func TestSelectBuilderNoRunner(t *testing.T) {
-	b := Select("test")
+//
+func TestSelectBuilderPlaceholders(t *testing.T) {
+	b := Select("test").Where("x = ? AND y = ?")
 
-	_, err := b.Exec()
-	assert.Equal(t, RunnerNotSet, err)
+	sql, _, _ := b.PlaceholderFormat(Question).ToSql()
+	assert.Equal(t, "SELECT test WHERE x = ? AND y = ?", sql)
 
-	_, err = b.Query()
-	assert.Equal(t, RunnerNotSet, err)
-
-	err = b.Scan()
-	assert.Equal(t, RunnerNotSet, err)
+	sql, _, _ = b.PlaceholderFormat(Dollar).ToSql()
+	assert.Equal(t, "SELECT test WHERE x = $1 AND y = $2", sql)
 }
+
+//func TestSelectBuilderRunners(t *testing.T) {
+//	db := &DBStub{}
+//	b := Select("test").RunWith(db)
+//
+//	expectedSql := "SELECT test"
+//
+//	b.Exec()
+//	assert.Equal(t, expectedSql, db.LastExecSql)
+//
+//	b.Query()
+//	assert.Equal(t, expectedSql, db.LastQuerySql)
+//
+//	b.QueryRow()
+//	assert.Equal(t, expectedSql, db.LastQueryRowSql)
+//
+//	err := b.Scan()
+//	assert.NoError(t, err)
+//}
+
+//func TestSelectBuilderNoRunner(t *testing.T) {
+//	b := Select("test")
+//
+//	_, err := b.Exec()
+//	assert.Equal(t, RunnerNotSet, err)
+//
+//	_, err = b.Query()
+//	assert.Equal(t, RunnerNotSet, err)
+//
+//	err = b.Scan()
+//	assert.Equal(t, RunnerNotSet, err)
+//}
 
 func TestSelectBuilderSimpleJoin(t *testing.T) {
 

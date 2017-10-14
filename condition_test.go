@@ -7,7 +7,7 @@ func TestCondition(t *testing.T) {
 	a(s)
 }
 
-func a(c Conditions)  {
+func a(c WhereConditions)  {
 	var b interface{}
 	c=c.Eq("a",b)
 }

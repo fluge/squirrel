@@ -15,8 +15,8 @@ func TestUpdateBuilderToSql(t *testing.T) {
 		Where("d = ?", 3).
 		OrderBy("e").
 		Limit(4).
-		Offset(5)
-		//Suffix("RETURNING ?", 6)
+		Offset(5).
+		Suffix("RETURNING ?", 6)
 
 	sql, args, err := b.ToSql()
 	assert.NoError(t, err)
@@ -50,22 +50,22 @@ func TestUpdateBuilderPlaceholders(t *testing.T) {
 	assert.Equal(t, "UPDATE test SET x = $1, y = $2", sql)
 }
 
-func TestUpdateBuilderRunners(t *testing.T) {
-	db := &DBStub{}
-	b := Update("test").Set("x", 1).RunWith(db)
-
-	expectedSql := "UPDATE test SET x = ?"
-
-	b.Exec()
-	assert.Equal(t, expectedSql, db.LastExecSql)
-}
-
-func TestUpdateBuilderNoRunner(t *testing.T) {
-	b := Update("test").Set("x", 1)
-
-	_, err := b.Exec()
-	assert.Equal(t, RunnerNotSet, err)
-}
+//func TestUpdateBuilderRunners(t *testing.T) {
+//	db := &DBStub{}
+//	b := Update("test").Set("x", 1).RunWith(db)
+//
+//	expectedSql := "UPDATE test SET x = ?"
+//
+//	b.Exec()
+//	assert.Equal(t, expectedSql, db.LastExecSql)
+//}
+//
+//func TestUpdateBuilderNoRunner(t *testing.T) {
+//	b := Update("test").Set("x", 1)
+//
+//	_, err := b.Exec()
+//	assert.Equal(t, RunnerNotSet, err)
+//}
 func TestUpdateBuilder_IncrBy(t *testing.T) {
 	a, _, _ := Update("test").Set("x", 1).IncrBy("a", 1).ToSql()
 	expectedSql := "UPDATE test SET x = ?, a = a+?"

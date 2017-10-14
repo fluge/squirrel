@@ -13,8 +13,8 @@ func TestDeleteBuilderToSql(t *testing.T) {
 		Where("b = ?", 1).
 		OrderBy("c").
 		Limit(2).
-		Offset(3)
-		//Suffix("RETURNING ?", 4)
+		Offset(3).
+		Suffix("RETURNING ?", 4)
 
 	sql, args, err := b.ToSql()
 	assert.NoError(t, err)
@@ -54,9 +54,9 @@ func TestDeleteBuilderToSqlErr(t *testing.T) {
 //	assert.Equal(t, expectedSql, db.LastExecSql)
 //}
 
-func TestDeleteBuilderNoRunner(t *testing.T) {
-	b := Delete("test")
-
-	_, err := b.Exec()
-	assert.Equal(t, RunnerNotSet, err)
-}
+//func TestDeleteBuilderNoRunner(t *testing.T) {
+//	b := Delete("test")
+//
+//	_, err := b.Exec()
+//	assert.Equal(t, RunnerNotSet, err)
+//}

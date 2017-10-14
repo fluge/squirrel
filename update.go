@@ -2,7 +2,6 @@ package squirrel
 
 import (
 	"bytes"
-	"database/sql"
 	"fmt"
 	"sort"
 	"strings"
@@ -12,11 +11,12 @@ import (
 
 type updateData struct {
 	PlaceholderFormat PlaceholderFormat
-	RunWith           BaseRunner
 	Prefixes          exprs
 	Table             string
 	SetClauses        []setClause
 	WhereParts        []Sqlizer
+	GroupBys          []string
+	HavingParts       []Sqlizer
 	OrderBys          []string
 	Limit             string
 	Offset            string
@@ -26,31 +26,6 @@ type updateData struct {
 type setClause struct {
 	column string
 	value  interface{}
-}
-
-func (d *updateData) Exec() (sql.Result, error) {
-	if d.RunWith == nil {
-		return nil, RunnerNotSet
-	}
-	return ExecWith(d.RunWith, d)
-}
-
-func (d *updateData) Query() (*sql.Rows, error) {
-	if d.RunWith == nil {
-		return nil, RunnerNotSet
-	}
-	return QueryWith(d.RunWith, d)
-}
-
-func (d *updateData) QueryRow() RowScanner {
-	if d.RunWith == nil {
-		return &Row{err: RunnerNotSet}
-	}
-	queryRower, ok := d.RunWith.(QueryRower)
-	if !ok {
-		return &Row{err: RunnerNotQueryRunner}
-	}
-	return QueryRowWith(queryRower, d)
 }
 
 func (d *updateData) ToSql() (sqlStr string, args []interface{}, err error) {
@@ -146,35 +121,8 @@ func init() {
 
 // PlaceholderFormat sets PlaceholderFormat (e.g. Question or Dollar) for the
 // query.
-func (b UpdateBuilder) PlaceholderFormat(f PlaceholderFormat) UpdateBuilder {
+func (b UpdateBuilder) PlaceholderFormat(f PlaceholderFormat) WhereConditions {
 	return builder.Set(b, "PlaceholderFormat", f).(UpdateBuilder)
-}
-
-// Runner methods
-
-// RunWith sets a Runner (like database/sql.DB) to be used with e.g. Exec.
-func (b UpdateBuilder) RunWith(runner BaseRunner) UpdateBuilder {
-	return setRunWith(b, runner).(UpdateBuilder)
-}
-
-// Exec builds and Execs the query with the Runner set by RunWith.
-func (b UpdateBuilder) Exec() (sql.Result, error) {
-	data := builder.GetStruct(b).(updateData)
-	return data.Exec()
-}
-
-func (b UpdateBuilder) Query() (*sql.Rows, error) {
-	data := builder.GetStruct(b).(updateData)
-	return data.Query()
-}
-
-func (b UpdateBuilder) QueryRow() RowScanner {
-	data := builder.GetStruct(b).(updateData)
-	return data.QueryRow()
-}
-
-func (b UpdateBuilder) Scan(dest ...interface{}) error {
-	return b.QueryRow().Scan(dest...)
 }
 
 // SQL methods
@@ -186,32 +134,32 @@ func (b UpdateBuilder) ToSql() (string, []interface{}, error) {
 }
 
 // Prefix adds an expression to the beginning of the query
-func (b UpdateBuilder) Prefix(sql string, args ...interface{}) UpdateBuilder {
+func (b UpdateBuilder) Prefix(sql string, args ...interface{}) UpdateCondition {
 	return builder.Append(b, "Prefixes", Expr(sql, args...)).(UpdateBuilder)
 }
 
 // Table sets the table to be updated.
-func (b UpdateBuilder) Table(table string) UpdateBuilder {
+func (b UpdateBuilder) Table(table string) UpdateCondition {
 	return builder.Set(b, "Table", table).(UpdateBuilder)
 }
 
 // Set adds SET clauses to the query.
-func (b UpdateBuilder) Set(column string, value interface{}) UpdateBuilder {
+func (b UpdateBuilder) Set(column string, value interface{}) UpdateCondition {
 	return builder.Append(b, "SetClauses", setClause{column: column, value: value}).(UpdateBuilder)
 }
 
-func (b UpdateBuilder) IncrBy(column string, num int) UpdateBuilder {
+func (b UpdateBuilder) IncrBy(column string, num int) UpdateCondition {
 	column = fmt.Sprintf("=+=%s = %s+", column, column)
 	return builder.Append(b, "SetClauses", setClause{column: column, value: num}).(UpdateBuilder)
 }
 
-func (b UpdateBuilder) DecrBy(column string, num int) UpdateBuilder {
+func (b UpdateBuilder) DecrBy(column string, num int) UpdateCondition {
 	column = fmt.Sprintf("=-=%s = %s+", column, column)
 	return builder.Append(b, "SetClauses", setClause{column: column, value: num}).(UpdateBuilder)
 }
 
 // SetMap is a convenience method which calls .Set for each key/value pair in clauses.
-func (b UpdateBuilder) SetMap(clauses map[string]interface{}) UpdateBuilder {
+func (b UpdateBuilder) SetMap(clauses map[string]interface{}) UpdateCondition {
 	keys := make([]string, len(clauses))
 	i := 0
 	for key := range clauses {
@@ -221,7 +169,7 @@ func (b UpdateBuilder) SetMap(clauses map[string]interface{}) UpdateBuilder {
 	sort.Strings(keys)
 	for _, key := range keys {
 		val, _ := clauses[key]
-		b = b.Set(key, val)
+		b = b.Set(key, val).(UpdateBuilder)
 	}
 	return b
 }
@@ -229,56 +177,68 @@ func (b UpdateBuilder) SetMap(clauses map[string]interface{}) UpdateBuilder {
 // Where adds WHERE expressions to the query.
 //
 // See SelectBuilder.Where for more information.
-func (b UpdateBuilder) Where(pred interface{}, args ...interface{}) Conditions {
+func (b UpdateBuilder) Where(pred interface{}, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(UpdateBuilder)
 }
 
 //expr
-func (b UpdateBuilder) Expr(sql string, args ...interface{}) UpdateBuilder {
+func (b UpdateBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(UpdateBuilder)
 }
 
 //eq
-func (b UpdateBuilder) Eq(column string, arg interface{}) Conditions {
+func (b UpdateBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b UpdateBuilder) Gt(column string, arg interface{}) Conditions {
+func (b UpdateBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b UpdateBuilder) GtOrEq(column string, arg interface{}) Conditions {
+func (b UpdateBuilder) GtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b UpdateBuilder) Lt(column string, arg interface{}) Conditions {
+func (b UpdateBuilder) Lt(column string, arg interface{}) WhereConditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b UpdateBuilder) LtOrEq(column string, arg interface{}) Conditions {
+func (b UpdateBuilder) LtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(LtOrEq{column: arg})
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b UpdateBuilder) OrderBy(orderBys ...string) Conditions {
+func (b UpdateBuilder) OrderBy(orderBys ...string) WhereConditions {
 	return builder.Extend(b, "OrderBys", orderBys).(UpdateBuilder)
 }
 
+// GroupBy adds GROUP BY expressions to the query.
+func (b UpdateBuilder) GroupBy(groupBys ...string) WhereConditions {
+	return builder.Extend(b, "GroupBys", groupBys).(SelectBuilder)
+}
+
+// Having adds an expression to the HAVING clause of the query.
+//
+// See Where.
+func (b UpdateBuilder) Having(pred interface{}, rest ...interface{}) WhereConditions {
+	return builder.Append(b, "HavingParts", newWherePart(pred, rest...)).(SelectBuilder)
+}
+
 // Limit sets a LIMIT clause on the update.
-func (b UpdateBuilder) Limit(limit int) Conditions {
+func (b UpdateBuilder) Limit(limit int) WhereConditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(UpdateBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b UpdateBuilder) Offset(offset int) Conditions {
+func (b UpdateBuilder) Offset(offset int) WhereConditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(UpdateBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b UpdateBuilder) Suffix(sql string, args ...interface{}) Conditions {
+func (b UpdateBuilder) Suffix(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(UpdateBuilder)
 }

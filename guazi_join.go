@@ -88,7 +88,7 @@ func init() {
 
 // PlaceholderFormat sets PlaceholderFormat (e.g. Question or Dollar) for the
 // query.
-func (b JoinBuilder) PlaceholderFormat(f PlaceholderFormat) JoinBuilder {
+func (b JoinBuilder) PlaceholderFormat(f PlaceholderFormat) WhereConditions {
 	return builder.Set(b, "PlaceholderFormat", f).(JoinBuilder)
 }
 
@@ -101,22 +101,22 @@ func (b JoinBuilder) ToSql() (string, []interface{}, error) {
 }
 
 // JoinClause adds a join clause to the query.
-func (b JoinBuilder) JoinClause(pred interface{}, args ...interface{}) JoinBuilder {
+func (b JoinBuilder) JoinClause(pred interface{}, args ...interface{}) JoinCondition {
 	return builder.Append(b, "Joins", newPart(pred, args...)).(JoinBuilder)
 }
 
 // Join adds a JOIN clause to the query.
-func (b JoinBuilder) Join(join string, rest ...interface{}) JoinBuilder {
+func (b JoinBuilder) Join(join string, rest ...interface{}) JoinCondition {
 	return b.JoinClause("JOIN "+join, rest...)
 }
 
 // LeftJoin adds a LEFT JOIN clause to the query.
-func (b JoinBuilder) LeftJoin(join string, rest ...interface{}) JoinBuilder {
+func (b JoinBuilder) LeftJoin(join string, rest ...interface{}) JoinCondition {
 	return b.JoinClause("LEFT JOIN "+join, rest...)
 }
 
 // RightJoin adds a RIGHT JOIN clause to the query.
-func (b JoinBuilder) RightJoin(join string, rest ...interface{}) JoinBuilder {
+func (b JoinBuilder) RightJoin(join string, rest ...interface{}) JoinCondition {
 	return b.JoinClause("RIGHT JOIN "+join, rest...)
 }
 
@@ -140,47 +140,47 @@ func (b JoinBuilder) RightJoin(join string, rest ...interface{}) JoinBuilder {
 // are ANDed together.
 //
 // Where will panic if pred isn't any of the above types.
-func (b JoinBuilder) Where(pred interface{}, args ...interface{}) JoinBuilder {
+func (b JoinBuilder) Where(pred interface{}, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(JoinBuilder)
 }
 
 //Condition
-func (b JoinBuilder) Condition() JoinBuilder {
+func (b JoinBuilder) Condition() WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart("")).(JoinBuilder)
 }
 
 //expr
-func (b JoinBuilder) Expr(sql string, args ...interface{}) JoinBuilder {
+func (b JoinBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(JoinBuilder)
 }
 
 //eq
-func (b JoinBuilder) Eq(column string, arg interface{}) JoinBuilder {
+func (b JoinBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b JoinBuilder) Gt(column string, arg interface{}) JoinBuilder {
+func (b JoinBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b JoinBuilder) GtOrEq(column string, arg interface{}) JoinBuilder {
+func (b JoinBuilder) GtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b JoinBuilder) Lt(column string, arg interface{}) JoinBuilder {
+func (b JoinBuilder) Lt(column string, arg interface{}) WhereConditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b JoinBuilder) LtOrEq(column string, arg interface{}) JoinBuilder {
+func (b JoinBuilder) LtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(LtOrEq{column: arg})
 }
 
 //or
-func (b JoinBuilder) Or(pred ...interface{}) JoinBuilder {
+func (b JoinBuilder) Or(pred ...interface{}) WhereConditions {
 	or := Or{}
 	for _, v := range pred {
 		switch t := v.(type) {
@@ -208,33 +208,33 @@ func (b JoinBuilder) Or(pred ...interface{}) JoinBuilder {
 }
 
 // GroupBy adds GROUP BY expressions to the query.
-func (b JoinBuilder) GroupBy(groupBys ...string) JoinBuilder {
+func (b JoinBuilder) GroupBy(groupBys ...string) WhereConditions {
 	return builder.Extend(b, "GroupBys", groupBys).(JoinBuilder)
 }
 
 // Having adds an expression to the HAVING clause of the query.
 //
 // See Where.
-func (b JoinBuilder) Having(pred interface{}, rest ...interface{}) JoinBuilder {
+func (b JoinBuilder) Having(pred interface{}, rest ...interface{}) WhereConditions {
 	return builder.Append(b, "HavingParts", newWherePart(pred, rest...)).(JoinBuilder)
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b JoinBuilder) OrderBy(orderBys ...string) JoinBuilder {
+func (b JoinBuilder) OrderBy(orderBys ...string) WhereConditions {
 	return builder.Extend(b, "OrderBys", orderBys).(JoinBuilder)
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b JoinBuilder) Limit(limit int) JoinBuilder {
+func (b JoinBuilder) Limit(limit int) WhereConditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(JoinBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b JoinBuilder) Offset(offset int) JoinBuilder {
+func (b JoinBuilder) Offset(offset int) WhereConditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(JoinBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b JoinBuilder) Suffix(sql string, args ...interface{}) JoinBuilder {
+func (b JoinBuilder) Suffix(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(JoinBuilder)
 }

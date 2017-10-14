@@ -9,7 +9,6 @@ import (
 
 type whereData struct {
 	PlaceholderFormat PlaceholderFormat
-	Joins             []Sqlizer
 	WhereParts        []Sqlizer
 	GroupBys          []string
 	HavingParts       []Sqlizer
@@ -75,47 +74,20 @@ func init() {
 	builder.Register(WhereBuilder{}, whereData{})
 }
 
+// Format methods
+
+// PlaceholderFormat sets PlaceholderFormat (e.g. Question or Dollar) for the
+// query.
+func (b WhereBuilder) PlaceholderFormat(f PlaceholderFormat) WhereConditions {
+	return builder.Set(b, "PlaceholderFormat", f).(DeleteBuilder)
+}
+
 // SQL methods
 
 // ToSql builds the query into a SQL string and bound args.
 func (b WhereBuilder) ToSql() (string, []interface{}, error) {
 	data := builder.GetStruct(b).(whereData)
 	return data.ToSql()
-}
-
-// Prefix adds an expression to the beginning of the query
-func (b WhereBuilder) Prefix(sql string, args ...interface{}) WhereBuilder {
-	return builder.Append(b, "Prefixes", Expr(sql, args...)).(WhereBuilder)
-}
-
-// Distinct adds a DISTINCT clause to the query.
-func (b WhereBuilder) Distinct() WhereBuilder {
-	return b.Options("DISTINCT")
-}
-
-// Options adds select option to the query
-func (b WhereBuilder) Options(options ...string) WhereBuilder {
-	return builder.Extend(b, "Options", options).(WhereBuilder)
-}
-
-// JoinClause adds a join clause to the query.
-func (b WhereBuilder) JoinClause(pred interface{}, args ...interface{}) WhereBuilder {
-	return builder.Append(b, "Joins", newPart(pred, args...)).(WhereBuilder)
-}
-
-// Join adds a JOIN clause to the query.
-func (b WhereBuilder) Join(join string, rest ...interface{}) WhereBuilder {
-	return b.JoinClause("JOIN "+join, rest...)
-}
-
-// LeftJoin adds a LEFT JOIN clause to the query.
-func (b WhereBuilder) LeftJoin(join string, rest ...interface{}) WhereBuilder {
-	return b.JoinClause("LEFT JOIN "+join, rest...)
-}
-
-// RightJoin adds a RIGHT JOIN clause to the query.
-func (b WhereBuilder) RightJoin(join string, rest ...interface{}) WhereBuilder {
-	return b.JoinClause("RIGHT JOIN "+join, rest...)
 }
 
 // Where adds an expression to the WHERE clause of the query.
@@ -138,37 +110,37 @@ func (b WhereBuilder) RightJoin(join string, rest ...interface{}) WhereBuilder {
 // are ANDed together.
 //
 // Where will panic if pred isn't any of the above types.
-func (b WhereBuilder) Where(pred interface{}, args ...interface{}) WhereBuilder {
+func (b WhereBuilder) Where(pred interface{}, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(WhereBuilder)
 }
 
 //expr
-func (b WhereBuilder) Expr(sql string, args ...interface{}) WhereBuilder {
+func (b WhereBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return b.Where(Expr(sql, args))
 }
 
 //eq
-func (b WhereBuilder) Eq(column string, arg interface{}) WhereBuilder {
+func (b WhereBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b WhereBuilder) Gt(column string, arg interface{}) WhereBuilder {
+func (b WhereBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b WhereBuilder) GtOrEq(column string, arg interface{}) WhereBuilder {
+func (b WhereBuilder) GtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b WhereBuilder) Lt(column string, arg interface{}) WhereBuilder {
+func (b WhereBuilder) Lt(column string, arg interface{}) WhereConditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b WhereBuilder) LtOrEq(column string, arg interface{}) WhereBuilder {
+func (b WhereBuilder) LtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(LtOrEq{column: arg})
 }
 
@@ -201,33 +173,33 @@ func (b WhereBuilder) Or(pred ...interface{}) WhereBuilder {
 }
 
 // GroupBy adds GROUP BY expressions to the query.
-func (b WhereBuilder) GroupBy(groupBys ...string) WhereBuilder {
+func (b WhereBuilder) GroupBy(groupBys ...string) WhereConditions {
 	return builder.Extend(b, "GroupBys", groupBys).(WhereBuilder)
 }
 
 // Having adds an expression to the HAVING clause of the query.
 //
 // See Where.
-func (b WhereBuilder) Having(pred interface{}, rest ...interface{}) WhereBuilder {
+func (b WhereBuilder) Having(pred interface{}, rest ...interface{}) WhereConditions {
 	return builder.Append(b, "HavingParts", newWherePart(pred, rest...)).(WhereBuilder)
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b WhereBuilder) OrderBy(orderBys ...string) WhereBuilder {
+func (b WhereBuilder) OrderBy(orderBys ...string) WhereConditions {
 	return builder.Extend(b, "OrderBys", orderBys).(WhereBuilder)
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b WhereBuilder) Limit(limit int) WhereBuilder {
+func (b WhereBuilder) Limit(limit int) WhereConditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(WhereBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b WhereBuilder) Offset(offset int) WhereBuilder {
+func (b WhereBuilder) Offset(offset int) WhereConditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(WhereBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b WhereBuilder) Suffix(sql string, args ...interface{}) WhereBuilder {
+func (b WhereBuilder) Suffix(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(WhereBuilder)
 }

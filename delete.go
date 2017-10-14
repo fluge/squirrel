@@ -2,7 +2,6 @@ package squirrel
 
 import (
 	"bytes"
-	"database/sql"
 	"fmt"
 	"strings"
 
@@ -11,21 +10,15 @@ import (
 
 type deleteData struct {
 	PlaceholderFormat PlaceholderFormat
-	RunWith           BaseRunner
 	Prefixes          exprs
 	From              string
 	WhereParts        []Sqlizer
 	OrderBys          []string
+	GroupBys          []string
+	HavingParts       []Sqlizer
 	Limit             string
 	Offset            string
 	Suffixes          exprs
-}
-
-func (d *deleteData) Exec() (sql.Result, error) {
-	if d.RunWith == nil {
-		return nil, RunnerNotSet
-	}
-	return ExecWith(d.RunWith, d)
 }
 
 func (d *deleteData) ToSql() (sqlStr string, args []interface{}, err error) {
@@ -89,21 +82,8 @@ func init() {
 
 // PlaceholderFormat sets PlaceholderFormat (e.g. Question or Dollar) for the
 // query.
-func (b DeleteBuilder) PlaceholderFormat(f PlaceholderFormat) DeleteBuilder {
+func (b DeleteBuilder) PlaceholderFormat(f PlaceholderFormat) WhereConditions {
 	return builder.Set(b, "PlaceholderFormat", f).(DeleteBuilder)
-}
-
-// Runner methods
-
-// RunWith sets a Runner (like database/sql.DB) to be used with e.g. Exec.
-func (b DeleteBuilder) RunWith(runner BaseRunner) DeleteBuilder {
-	return setRunWith(b, runner).(DeleteBuilder)
-}
-
-// Exec builds and Execs the query with the Runner set by RunWith.
-func (b DeleteBuilder) Exec() (sql.Result, error) {
-	data := builder.GetStruct(b).(deleteData)
-	return data.Exec()
 }
 
 // SQL methods
@@ -115,68 +95,77 @@ func (b DeleteBuilder) ToSql() (string, []interface{}, error) {
 }
 
 // Prefix adds an expression to the beginning of the query
-func (b DeleteBuilder) Prefix(sql string, args ...interface{}) DeleteBuilder {
+func (b DeleteBuilder) Prefix(sql string, args ...interface{}) DeleteCondition {
 	return builder.Append(b, "Prefixes", Expr(sql, args...)).(DeleteBuilder)
 }
 
 // From sets the table to be deleted from.
-func (b DeleteBuilder) From(from string) DeleteBuilder {
+func (b DeleteBuilder) From(from string) DeleteCondition {
 	return builder.Set(b, "From", from).(DeleteBuilder)
 }
 
 // Where adds WHERE expressions to the query.
 //
 // See SelectBuilder.Where for more information.
-func (b DeleteBuilder) Where(pred interface{}, args ...interface{}) Conditions {
+func (b DeleteBuilder) Where(pred interface{}, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(DeleteBuilder)
 }
 
 //expr
-func (b DeleteBuilder) Expr(sql string, args ...interface{}) DeleteBuilder {
+func (b DeleteBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(DeleteBuilder)
 }
 
 //eq
-func (b DeleteBuilder) Eq(column string, arg interface{}) Conditions {
+func (b DeleteBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
 //gt
-func (b DeleteBuilder) Gt(column string, arg interface{}) Conditions {
+func (b DeleteBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})
 }
 
 //gtOrEq
-func (b DeleteBuilder) GtOrEq(column string, arg interface{}) Conditions {
+func (b DeleteBuilder) GtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(GtOrEq{column: arg})
 }
 
 //lt
-func (b DeleteBuilder) Lt(column string, arg interface{}) Conditions {
+func (b DeleteBuilder) Lt(column string, arg interface{}) WhereConditions {
 	return b.Where(Lt{column: arg})
 }
 
 //ltOrEq
-func (b DeleteBuilder) LtOrEq(column string, arg interface{}) Conditions {
+func (b DeleteBuilder) LtOrEq(column string, arg interface{}) WhereConditions {
 	return b.Where(LtOrEq{column: arg})
 }
 
 // OrderBy adds ORDER BY expressions to the query.
-func (b DeleteBuilder) OrderBy(orderBys ...string) Conditions {
+func (b DeleteBuilder) GroupBy(groupBys ...string) WhereConditions {
+	return builder.Extend(b, "GroupBys", groupBys).(DeleteBuilder)
+}
+
+func (b DeleteBuilder) Having(pred interface{}, rest ...interface{}) WhereConditions {
+	return builder.Append(b, "HavingParts", newWherePart(pred, rest...)).(DeleteBuilder)
+}
+
+// OrderBy adds ORDER BY expressions to the query.
+func (b DeleteBuilder) OrderBy(orderBys ...string) WhereConditions {
 	return builder.Extend(b, "OrderBys", orderBys).(DeleteBuilder)
 }
 
 // Limit sets a LIMIT clause on the query.
-func (b DeleteBuilder) Limit(limit int) Conditions {
+func (b DeleteBuilder) Limit(limit int) WhereConditions {
 	return builder.Set(b, "Limit", fmt.Sprintf("%d", limit)).(DeleteBuilder)
 }
 
 // Offset sets a OFFSET clause on the query.
-func (b DeleteBuilder) Offset(offset int) Conditions {
+func (b DeleteBuilder) Offset(offset int) WhereConditions {
 	return builder.Set(b, "Offset", fmt.Sprintf("%d", offset)).(DeleteBuilder)
 }
 
 // Suffix adds an expression to the end of the query
-func (b DeleteBuilder) Suffix(sql string, args ...interface{}) Conditions {
+func (b DeleteBuilder) Suffix(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "Suffixes", Expr(sql, args...)).(DeleteBuilder)
 }
