@@ -79,7 +79,7 @@ func init() {
 // PlaceholderFormat sets PlaceholderFormat (e.g. Question or Dollar) for the
 // query.
 func (b WhereBuilder) PlaceholderFormat(f PlaceholderFormat) WhereConditions {
-	return builder.Set(b, "PlaceholderFormat", f).(DeleteBuilder)
+	return builder.Set(b, "PlaceholderFormat", f).(WhereBuilder)
 }
 
 // SQL methods
@@ -112,6 +112,11 @@ func (b WhereBuilder) ToSql() (string, []interface{}, error) {
 // Where will panic if pred isn't any of the above types.
 func (b WhereBuilder) Where(pred interface{}, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(WhereBuilder)
+}
+
+//Condition
+func (b WhereBuilder) Condition() WhereConditions {
+	return builder.Append(b, "WhereParts", newWherePart("")).(WhereBuilder)
 }
 
 //expr

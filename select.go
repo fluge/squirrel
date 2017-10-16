@@ -222,6 +222,11 @@ func (b SelectBuilder) Where(pred interface{}, args ...interface{}) WhereConditi
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(SelectBuilder)
 }
 
+//Condition
+func (b SelectBuilder) Condition() WhereConditions {
+	return builder.Append(b, "WhereParts", newWherePart("")).(SelectBuilder)
+}
+
 //expr
 func (b SelectBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(SelectBuilder)

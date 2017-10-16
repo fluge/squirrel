@@ -111,6 +111,11 @@ func (b DeleteBuilder) Where(pred interface{}, args ...interface{}) WhereConditi
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(DeleteBuilder)
 }
 
+//Condition
+func (b DeleteBuilder) Condition() WhereConditions {
+	return builder.Append(b, "WhereParts", newWherePart("")).(DeleteBuilder)
+}
+
 //expr
 func (b DeleteBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(DeleteBuilder)

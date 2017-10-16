@@ -4,6 +4,7 @@ type WhereConditions interface {
 	ToSql() (string, []interface{}, error)
 	PlaceholderFormat(PlaceholderFormat) WhereConditions
 	Where(interface{}, ...interface{}) WhereConditions
+	Condition() WhereConditions
 	Expr(string, ...interface{}) WhereConditions
 	Eq(string, interface{}) WhereConditions
 	Gt(string, interface{}) WhereConditions

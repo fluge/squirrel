@@ -181,6 +181,11 @@ func (b UpdateBuilder) Where(pred interface{}, args ...interface{}) WhereConditi
 	return builder.Append(b, "WhereParts", newWherePart(pred, args...)).(UpdateBuilder)
 }
 
+//Condition
+func (b UpdateBuilder) Condition() WhereConditions {
+	return builder.Append(b, "WhereParts", newWherePart("")).(UpdateBuilder)
+}
+
 //expr
 func (b UpdateBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(UpdateBuilder)
@@ -218,14 +223,14 @@ func (b UpdateBuilder) OrderBy(orderBys ...string) WhereConditions {
 
 // GroupBy adds GROUP BY expressions to the query.
 func (b UpdateBuilder) GroupBy(groupBys ...string) WhereConditions {
-	return builder.Extend(b, "GroupBys", groupBys).(SelectBuilder)
+	return builder.Extend(b, "GroupBys", groupBys).(UpdateBuilder)
 }
 
 // Having adds an expression to the HAVING clause of the query.
 //
 // See Where.
 func (b UpdateBuilder) Having(pred interface{}, rest ...interface{}) WhereConditions {
-	return builder.Append(b, "HavingParts", newWherePart(pred, rest...)).(SelectBuilder)
+	return builder.Append(b, "HavingParts", newWherePart(pred, rest...)).(UpdateBuilder)
 }
 
 // Limit sets a LIMIT clause on the update.
