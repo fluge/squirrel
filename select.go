@@ -237,6 +237,10 @@ func (b SelectBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
+func (b SelectBuilder) NotEq(column string, arg interface{}) WhereConditions {
+	return b.Where(NotEq{column: arg})
+}
+
 //gt
 func (b SelectBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})

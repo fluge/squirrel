@@ -196,6 +196,10 @@ func (b UpdateBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
+func (b UpdateBuilder) NotEq(column string, arg interface{}) WhereConditions {
+	return b.Where(NotEq{column: arg})
+}
+
 //gt
 func (b UpdateBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})

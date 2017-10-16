@@ -126,6 +126,10 @@ func (b DeleteBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
+func (b DeleteBuilder) NotEq(column string, arg interface{}) WhereConditions {
+	return b.Where(NotEq{column: arg})
+}
+
 //gt
 func (b DeleteBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})

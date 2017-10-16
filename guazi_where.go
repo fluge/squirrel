@@ -129,6 +129,10 @@ func (b WhereBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
 }
 
+func (b WhereBuilder) NotEq(column string, arg interface{}) WhereConditions {
+	return b.Where(NotEq{column: arg})
+}
+
 //gt
 func (b WhereBuilder) Gt(column string, arg interface{}) WhereConditions {
 	return b.Where(Gt{column: arg})

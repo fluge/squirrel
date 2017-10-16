@@ -7,6 +7,7 @@ type WhereConditions interface {
 	Condition() WhereConditions
 	Expr(string, ...interface{}) WhereConditions
 	Eq(string, interface{}) WhereConditions
+	NotEq(string, interface{}) WhereConditions
 	Gt(string, interface{}) WhereConditions
 	GtOrEq(string, interface{}) WhereConditions
 	Lt(string, interface{}) WhereConditions

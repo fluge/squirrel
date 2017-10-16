@@ -154,6 +154,10 @@ func (b JoinBuilder) Expr(sql string, args ...interface{}) WhereConditions {
 	return builder.Append(b, "WhereParts", newWherePart(expr{sql: sql, args: args})).(JoinBuilder)
 }
 
+func (b JoinBuilder) NotEq(column string, arg interface{}) WhereConditions {
+	return b.Where(NotEq{column: arg})
+}
+
 //eq
 func (b JoinBuilder) Eq(column string, arg interface{}) WhereConditions {
 	return b.Where(Eq{column: arg})
