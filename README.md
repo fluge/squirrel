@@ -7,7 +7,7 @@ or if you prefer using `master` (which may be arbitrarily ahead of or behind `v1
 
 **NOTE:** as of Go 1.6, `go get` correctly clones the Github default branch (which is `v1` in this repo).
 ```go
-import "github.com/Masterminds/squirrel"
+import "github.com/fluge/squirrel"
 ```
 
 [![GoDoc](https://godoc.org/github.com/Masterminds/squirrel?status.png)](https://godoc.org/github.com/Masterminds/squirrel)
@@ -62,41 +62,6 @@ Squirrel makes conditional query building a breeze:
 if len(q) > 0 {
     users = users.Where("name LIKE ?", fmt.Sprint("%", q, "%"))
 }
-```
-
-Squirrel wants to make your life easier:
-
-```go
-// StmtCache caches Prepared Stmts for you
-dbCache := sq.NewStmtCacher(db)
-
-// StatementBuilder keeps your syntax neat
-mydb := sq.StatementBuilder.RunWith(dbCache)
-select_users := mydb.Select("*").From("users")
-```
-
-Squirrel loves PostgreSQL:
-
-```go
-psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-
-// You use question marks for placeholders...
-sql, _, _ := psql.Select("*").From("elephants").Where("name IN (?,?)", "Dumbo", "Verna")
-
-/// ...squirrel replaces them using PlaceholderFormat.
-sql == "SELECT * FROM elephants WHERE name IN ($1,$2)"
-
-
-/// You can retrieve id ...
-query := sq.Insert("nodes").
-    Columns("uuid", "type", "data").
-    Values(node.Uuid, node.Type, node.Data).
-    Suffix("RETURNING \"id\"").
-    RunWith(m.db).
-    PlaceholderFormat(sq.Dollar)
-
-query.QueryRow().Scan(&node.id)
-```
 
 You can escape question mask by inserting two question marks:
 
