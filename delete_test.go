@@ -54,9 +54,10 @@ func TestDeleteBuilderToSqlErr(t *testing.T) {
 //	assert.Equal(t, expectedSql, db.LastExecSql)
 //}
 
-//func TestDeleteBuilderNoRunner(t *testing.T) {
-//	b := Delete("test")
-//
-//	_, err := b.Exec()
-//	assert.Equal(t, RunnerNotSet, err)
-//}
+func TestDeleteBuilderNoRunner(t *testing.T) {
+	b := Delete("test")
+
+	//_, err := b.Exec()
+	//assert.Equal(t, RunnerNotSet, err)
+	t.Log(b)
+}
