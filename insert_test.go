@@ -46,23 +46,23 @@ func TestInsertBuilderPlaceholders(t *testing.T) {
 	sql, _, _ = b.PlaceholderFormat(Dollar).ToSql()
 	assert.Equal(t, "INSERT INTO test VALUES ($1,$2)", sql)
 }
-
-func TestInsertBuilderRunners(t *testing.T) {
-	db := &DBStub{}
-	b := Insert("test").Values(1).RunWith(db)
-
-	expectedSql := "INSERT INTO test VALUES (?)"
-
-	b.Exec()
-	assert.Equal(t, expectedSql, db.LastExecSql)
-}
-
-func TestInsertBuilderNoRunner(t *testing.T) {
-	b := Insert("test").Values(1)
-
-	_, err := b.Exec()
-	assert.Equal(t, RunnerNotSet, err)
-}
+//
+//func TestInsertBuilderRunners(t *testing.T) {
+//	db := &DBStub{}
+//	b := Insert("test").Values(1).RunWith(db)
+//
+//	expectedSql := "INSERT INTO test VALUES (?)"
+//
+//	b.Exec()
+//	assert.Equal(t, expectedSql, db.LastExecSql)
+//}
+//
+//func TestInsertBuilderNoRunner(t *testing.T) {
+//	b := Insert("test").Values(1)
+//
+//	_, err := b.Exec()
+//	assert.Equal(t, RunnerNotSet, err)
+//}
 
 func TestInsertBuilderSetMap(t *testing.T) {
 	b := Insert("table").SetMap(Eq{"field1": 1})
@@ -76,3 +76,17 @@ func TestInsertBuilderSetMap(t *testing.T) {
 	expectedArgs := []interface{}{1}
 	assert.Equal(t, expectedArgs, args)
 }
+
+//func TestInsertBuilderSelect(t *testing.T) {
+//	sb := Select("field1").From("table1").Where(Eq{"field1": 1})
+//	ib := Insert("table2").Columns("field1").Select(sb)
+//
+//	sql, args, err := ib.ToSql()
+//	assert.NoError(t, err)
+//
+//	expectedSql := "INSERT INTO table2 (field1) SELECT field1 FROM table1 WHERE field1 = ?"
+//	assert.Equal(t, expectedSql, sql)
+//
+//	expectedArgs := []interface{}{1}
+//	assert.Equal(t, expectedArgs, args)
+//}

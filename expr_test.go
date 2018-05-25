@@ -2,8 +2,9 @@ package squirrel
 
 import (
 	"database/sql"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEqToSql(t *testing.T) {
@@ -51,6 +52,90 @@ func TestEqNotInToSql(t *testing.T) {
 	assert.Equal(t, expectedSql, sql)
 
 	expectedArgs := []interface{}{1, 2, 3}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestEqInEmptyToSql(t *testing.T) {
+	b := Eq{"id": []int{}}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "(1=0)"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestNotEqInEmptyToSql(t *testing.T) {
+	b := NotEq{"id": []int{}}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "(1=1)"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestEqBytesToSql(t *testing.T) {
+	b := Eq{"id": []byte("test")}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "id = ?"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{[]byte("test")}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestLtToSql(t *testing.T) {
+	b := Lt{"id": 1}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "id < ?"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{1}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestLtOrEqToSql(t *testing.T) {
+	b := LtOrEq{"id": 1}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "id <= ?"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{1}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestGtToSql(t *testing.T) {
+	b := Gt{"id": 1}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "id > ?"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{1}
+	assert.Equal(t, expectedArgs, args)
+}
+
+func TestGtOrEqToSql(t *testing.T) {
+	b := GtOrEq{"id": 1}
+	sql, args, err := b.ToSql()
+	assert.NoError(t, err)
+
+	expectedSql := "id >= ?"
+	assert.Equal(t, expectedSql, sql)
+
+	expectedArgs := []interface{}{1}
 	assert.Equal(t, expectedArgs, args)
 }
 
@@ -103,11 +188,11 @@ func TestNullTypeInt64(t *testing.T) {
 	assert.Empty(t, args)
 	assert.Equal(t, "user_id IS NULL", sql)
 
-	userID.Scan(10)
+	userID.Scan(int64(10))
 	b = Eq{"user_id": userID}
 	sql, args, err = b.ToSql()
 
 	assert.NoError(t, err)
-	assert.Equal(t, []interface{}{10}, args)
+	assert.Equal(t, []interface{}{int64(10)}, args)
 	assert.Equal(t, "user_id = ?", sql)
 }
